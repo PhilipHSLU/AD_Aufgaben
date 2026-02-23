@@ -1,9 +1,9 @@
-package ch.hslu.w1BasicsZug;
+package ch.hslu.w0BasicsZug;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static ch.hslu.w1BasicsZug.Wagen.berechneGesamtPlätze;
+import static ch.hslu.w0BasicsZug.Wagen.berechneGesamtPlätze;
 
 
 public final class ZugSimulation {

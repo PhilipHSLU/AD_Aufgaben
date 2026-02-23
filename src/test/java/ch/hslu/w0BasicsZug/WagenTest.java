@@ -1,12 +1,10 @@
-package ch.hslu.w1BasicsZug;
+package ch.hslu.w0BasicsZug;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class WagenTest {
     @Test

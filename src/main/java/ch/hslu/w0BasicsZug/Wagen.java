@@ -1,4 +1,4 @@
-package ch.hslu.w1BasicsZug;
+package ch.hslu.w0BasicsZug;
 
 import java.util.Objects;
 
