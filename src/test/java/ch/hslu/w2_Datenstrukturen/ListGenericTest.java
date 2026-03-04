@@ -2,14 +2,11 @@ package ch.hslu.w2_Datenstrukturen;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-class ListTest {
-    private static final Logger LOG = LoggerFactory.getLogger(ListTest.class);
+class ListGenericTest {
 
     @Test
     void testSize() {
