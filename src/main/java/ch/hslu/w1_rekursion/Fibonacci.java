@@ -23,6 +23,7 @@ public class Fibonacci {
         if (n <= 1) return n;
 
         // Wenn Wert schon berechnet wurde, direkt zurückgeben
+        // new Long[] Array = 0 beim Erstellen
         if (memo[n] != 0) return memo[n];
 
         // Ansonsten berechnen und speichern
