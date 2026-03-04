@@ -9,13 +9,17 @@ class ArrayStackTest {
 
     @Test
     void isEmpty() {
-        ArrayStack stack = new ArrayStack();
+        String[] arrempty = new String[0];
+        ArrayStack stack = new ArrayStack(arrempty);
         assertThat(stack.isEmpty()).isTrue();
     }
 
     @Test
     void isNotEmpty() {
-        ArrayStack stack = new ArrayStack();
+        String[] arr2 = new String[2];
+//        arr2[0] = "lol";
+
+        ArrayStack stack = new ArrayStack(arr2);
         stack.push("sali");
 
         assertThat(stack.isEmpty()).isFalse();
@@ -24,8 +28,10 @@ class ArrayStackTest {
     @Test
     void isFull() {
         String[] array1 = new String[1];
-
+//        array1[0] = "element";
         ArrayStack stack = new ArrayStack(array1);
+
+        stack.push("lol");
         assertThat(stack.isFull()).isTrue();
     }
 }

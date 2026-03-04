@@ -20,7 +20,7 @@ public interface ArrayStackAble {
      * die weiteren 3 Methoden sind selbstverständlich
      * @return
      */
-    int size();
+    int getSize();
     boolean isFull();
     boolean isEmpty();
 }
