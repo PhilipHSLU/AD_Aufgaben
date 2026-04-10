@@ -1,12 +1,10 @@
-package ch.hslu.w6_Locking.u5;
+package ch.hslu.ad;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveTask;
 
 /**
  * Analyzes and calculates the Measure of Textual Lexical Diversity (MTLD)
@@ -17,8 +15,7 @@ public class MTLDAnalyzer {
     private static final int MIN_TOKENS = 50;
 
     /**
-     * Simple tree structure to represent an XML document containing books, book,
-     * chapter, paragraphs.
+     * Simple tree structure to represent an XML document containing books, book, chapter, paragraphs.
      * The structure does not model XML attributes.
      */
     private static class BookNode {
@@ -51,8 +48,7 @@ public class MTLDAnalyzer {
         }
 
         static BookNode getFromXml(Node node) {
-            if (node == null)
-                throw new IllegalArgumentException("node must not be null");
+            if (node == null) throw new IllegalArgumentException("node must not be null");
 
             List<BookNode> bookNodes = new ArrayList<>();
             NodeList childNodes = node.getChildNodes();
@@ -86,20 +82,17 @@ public class MTLDAnalyzer {
         }
 
         public double getAverage() {
-            if (count == 0)
-                throw new IllegalStateException("No values added");
+            if (count == 0) throw new IllegalStateException("No values added");
             return sum / count;
         }
     }
 
     /**
-     * Main function that calculates the Measure of Textual Lexical Diversity
-     * (MTLD).
+     * Main function that calculates the Measure of Textual Lexical Diversity (MTLD).
      */
     private double calculateMTLD(String paragraph) {
         String[] tokens = paragraph.toLowerCase().replaceAll("[^a-z ]", "").split("\\s+");
-        if (tokens.length < MIN_TOKENS)
-            return 0.0;
+        if (tokens.length < MIN_TOKENS) return 0.0;
         double forward = calculateMTLDSinglePass(tokens);
         List<String> list = Arrays.asList(tokens);
         Collections.reverse(list);
@@ -113,8 +106,7 @@ public class MTLDAnalyzer {
         Set<String> uniqueWords = new HashSet<>();
 
         for (String token : words) {
-            if (token.isEmpty())
-                continue;
+            if (token.isEmpty()) continue;
 
             uniqueWords.add(token);
             currentWordCount++;
@@ -139,8 +131,7 @@ public class MTLDAnalyzer {
      * the average for each book.
      */
     private CumulativeAverage analyzeBook(BookNode node) {
-        if (node == null)
-            throw new IllegalArgumentException("node must not be null");
+        if (node == null) throw new IllegalArgumentException("node must not be null");
 
         CumulativeAverage cumulativeAverage = new CumulativeAverage();
         if (node.name.equals("paragraph")) {
@@ -157,10 +148,8 @@ public class MTLDAnalyzer {
     }
 
     private String getTitle(BookNode node) {
-        if (node == null)
-            throw new IllegalArgumentException("node must not be null");
-        if (!node.name.equals("book"))
-            throw new IllegalArgumentException("node must be a book node");
+        if (node == null) throw new IllegalArgumentException("node must not be null");
+        if (!node.name.equals("book")) throw new IllegalArgumentException("node must be a book node");
 
         for (BookNode bookNode : node.children) {
             if (bookNode.name.equals("title")) {
@@ -170,76 +159,15 @@ public class MTLDAnalyzer {
         return ""; // no title found
     }
 
-    // add this method to MTLDAnalyzer
-    private static int countParagraphs(BookNode node) {
-        if (node.name.equals("paragraph"))
-            return 1;
-        int count = 0;
-        for (BookNode child : node.children) {
-            count += countParagraphs(child);
-        }
-        return count;
-    }
-
-    private static class MTLDTask extends RecursiveTask<CumulativeAverage> {
-        private final BookNode node;
-        private final MTLDAnalyzer analyzer;
-
-        MTLDTask(BookNode node, MTLDAnalyzer analyzer) {
-            this.node = node;
-            this.analyzer = analyzer;
-        }
-
-        @Override
-        protected CumulativeAverage compute() {
-            // sequential: chapter level and below
-            if (node.name.equals("chapter") || node.name.equals("paragraph") || node.name.equals("title")) {
-                return analyzer.analyzeBook(node);
-            }
-
-            // parallel: fork a task per child (applies at "books" and "book" level)
-            List<MTLDTask> tasks = new ArrayList<>();
-            for (BookNode child : node.children) {
-                MTLDTask task = new MTLDTask(child, analyzer);
-                task.fork();
-                tasks.add(task);
-            }
-
-            // join all and combine results
-            CumulativeAverage result = new CumulativeAverage();
-            for (MTLDTask task : tasks) {
-                result.add(task.join());
-            }
-
-            // print at book level (same as original analyzeBook does)
-            if (node.name.equals("book")) {
-                System.out.printf("Book '%s' has avg. MTLD of %.2f\n",
-                        analyzer.getTitle(node), result.getAverage());
-            }
-            return result;
-        }
-    }
-
-    static void main() throws IOException {
+    public static void main(String[] args) throws IOException {
         BookNode books = BookNode.getFromXml("books.xml");
         MTLDAnalyzer mtldAnalyzer = new MTLDAnalyzer();
-
-        for (BookNode book : books.children) {
-            String title = mtldAnalyzer.getTitle(book);
-            int chapters = book.children.size() - 1; // minus title node
-            int paragraphs = countParagraphs(book);
-            int chars = book.text.length();
-            System.out.printf("%-50s chapters: %3d  paragraphs: %5d  chars: %,d%n",
-                    title, chapters, paragraphs, chars);
-        }
 
         // note: consider the first three executions as warm-up
         for (int i = 0; i < 10; ++i) {
             long timeBefore = System.nanoTime();
 
-            // mtldAnalyzer.analyzeBook(books);
-            MTLDTask task = new MTLDTask(books, mtldAnalyzer);
-            ForkJoinPool.commonPool().invoke(task);
+            mtldAnalyzer.analyzeBook(books);
 
             System.out.println("Time: " + (System.nanoTime() - timeBefore) / 1000000);
         }
