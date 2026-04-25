@@ -6,13 +6,15 @@ public class InsertionSortBenchMark {
     private static final Logger LOG = LoggerFactory.getLogger(InsertionSortBenchMark.class);
 
     public static void main(String[] args) {
+
         long start = System.currentTimeMillis();
         int[] a100k = CreateArrays.getShuffledNumbers(100_000);
         SortierAlgorythmen.insertionSort(a100k);
 
         long end = System.currentTimeMillis();
         long total = end - start;
-        LOG.info("shuffeled time: {}", total);
+
+        LOG.info("time for 100_000 Shuffled elemets: {}", total);
 
     }
 
